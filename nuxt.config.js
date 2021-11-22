@@ -58,6 +58,9 @@ export default {
         refreshToken: {
           maxAge: 20160 * 60
         },
+        redirect: {
+          logout: '/',
+        }
       },
     }
   },
