@@ -4,25 +4,44 @@
       <div class="row">
         <div class="card col">
           <div class="card-body">
+            <div class="d-flex mx-auto mb-3">
+              <div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Filter</span>
+                  </div>
+                  <input type="text" class="form-control" v-model="filter" />
+                </div>
+              </div>
+              <div class="ml-auto text-right">
+                {{ currentPageStart }} of {{ totalItems }}
+              </div>
+            </div>
             <b-table
               :items="items"
               :current-page="currentPage"
               :fields="tableFields"
               :perPage="perPage"
+              :filter="filter"
+              :filter-included-fields="filterFields"
               responsive
             >
               <template v-slot:cell(price_cents)="data">
-                <span>{{ data.item.price_cents | convertCentsToLocaleString }} </span>
+                <span
+                  >{{ data.item.price_cents | convertCentsToLocaleString }}
+                </span>
               </template>
               <template v-slot:cell(cost_cents)="data">
-                <span>{{ data.item.cost_cents | convertCentsToLocaleString }} </span>
+                <span
+                  >{{ data.item.cost_cents | convertCentsToLocaleString }}
+                </span>
               </template>
             </b-table>
             <b-row>
               <b-col md="12" class="mt-3">
                 <b-pagination
                   v-model="currentPage"
-                  :total-rows="items.length"
+                  :total-rows="totalItems"
                   :per-page="perPage"
                   first-text="First"
                   prev-text="Prev"
@@ -53,6 +72,7 @@ export default {
   data() {
     return {
       tableFields: [
+        { key: 'product_id', thClass: 'd-none', tdClass: 'd-none' },
         {
           key: 'product.product_name',
           label: 'Product Name',
@@ -94,7 +114,17 @@ export default {
       totalRows: 10,
       currentPage: 1,
       perPage: 10,
+      filter: '',
+      filterFields: ['sku', 'product_id'],
     }
+  },
+  computed: {
+    currentPageStart() {
+      return this.currentPage * this.perPage
+    },
+    totalItems() {
+      return this.items.length
+    },
   },
   filters: {
     convertCentsToLocaleString: function (value) {
